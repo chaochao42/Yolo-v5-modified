@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script>
+        async function AJAXSubmit(oFormElement) {
+            var resultElement = oFormElement.elements.namedItem("result");
+            var imageElement = document.getElementsByName("image")[0];
+            const formData = new FormData(oFormElement);
+            if (formData.get("pics").size == 0)
+                return;
+            try {
+                const response = await fetch(oFormElement.action, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const json = await response.json();
+                resultElement.value = `isSeal:${json.isSeal}, confDet:${json.confDet}`;
+                imageElement.src = "data:image/jpg;base64," + json.sealImageBase64;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</head>
+<body>
+    <form name="form"
+          action="/ls"
+          method="post"
+          enctype="multipart/form-data"
+          onsubmit="AJAXSubmit(this);return false;">
+        <input type="text" name="fileName" readonly />
+        <input type="text" name="size" readonly />
+        conf: <input type="text" name="conf" />
+        <input type="file" name="pics" accept="image/jpeg" />
+        <input type="submit" name="submit"/>
+
+        <div style="margin-top:15px">
+            <img name="image" src="" width="500" height="500"/>
+            <br/>
+            <output name="result"></output>
+        </div>
+    </form>
+
+    <script>
+        var formEle = document.getElementsByName("form")[0];
+        var nameEle = formEle.elements.namedItem("fileName");
+        var sizeEle = formEle.elements.namedItem("size");
+        var fileEle = formEle.elements.namedItem("pics");
+        fileEle.addEventListener('change', () => {
+            if (fileEle.files.length <= 0)
+                return;
+            var file = fileEle.files[0];
+            nameEle.value = file.name;
+            sizeEle.value = file.size;
+        });
+    </script>
+</body>
+</html>
