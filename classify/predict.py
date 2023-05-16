@@ -107,6 +107,7 @@ def run(
     model.warmup(imgsz=(1 if pt else bs, 3, *imgsz))  # warmup
     seen, windows, dt = 0, [], (Profile(), Profile(), Profile())
     for path, im, im0s, vid_cap, s in dataset:
+        print(f"================== im origin shape {im.shape}")
         with dt[0]:
             im = torch.Tensor(im).to(model.device)
             im = im.half() if model.fp16 else im.float()  # uint8 to fp16/32
@@ -115,12 +116,13 @@ def run(
 
         # Inference
         with dt[1]:
+            print(f"============= im shape {im.shape}")
             results = model(im)
-
+            print(results.shape)
         # Post-process
         with dt[2]:
             pred = F.softmax(results, dim=1)  # probabilities
-
+            print(pred.shape)
         # Process predictions
         for i, prob in enumerate(pred):  # per image
             seen += 1

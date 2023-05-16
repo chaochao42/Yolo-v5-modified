@@ -140,6 +140,8 @@ class Annotator:
         im_gpu = im_gpu.permute(1, 2, 0).contiguous()  # shape(h,w,3)
         im_gpu = im_gpu * inv_alph_masks[-1] + mcs
         im_mask = (im_gpu * 255).byte().cpu().numpy()
+        print(f"================== im shape {self.im.shape} ====")
+        print(f"=================== retina_masks {scale_image(im_gpu.shape, im_mask, self.im.shape).shape}")
         self.im[:] = im_mask if retina_masks else scale_image(im_gpu.shape, im_mask, self.im.shape)
         if self.pil:
             # convert im back to PIL and update draw

@@ -1,0 +1,2 @@
+CUDA_VISIBLE_DEVICES=3
+python -m torch.distributed.run --nproc_per_node 1  --master_port 2022 classify/train.py --model yolov5s-cls.pt --data ~/3d/datasets/qf_cls --epochs 100 --img 224 --batch 128 --name single_with_pd_cls --device 3
